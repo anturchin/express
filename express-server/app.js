@@ -11,9 +11,21 @@ app.set('view engine', 'handlebars');
 
 const port = process.env.PORT || 3000;
 
+const fortunes = [
+    'рекам нужны истоки',
+    'не бойся неведомого',
+    'тебя ждет приятный сюрприз',
+    'будь проще везде, где только можно',
+];
+
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => res.render('home'));
-app.get('/about', (req, res) => res.render('about'));
+app.get('/about', (req, res) => {
+    const randomNumber = Math.floor(Math.random() * fortunes.length);
+    const randomFortune = fortunes[randomNumber];
+    res.render('about', { fortune:  randomFortune});
+});
 
 app.use((req, res) => {
     res.status(404);
