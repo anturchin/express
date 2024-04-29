@@ -19,4 +19,11 @@ app.get('/about', about);
 app.use(notFound);
 app.use(serverError);
 
-app.listen(port, () => console.log(`server express is running on port ${port}...`));
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Express started on http://localhost:${port}` +
+            '; press Ctrl-C to terminate.')
+    })
+} else {
+    module.exports = app
+}
