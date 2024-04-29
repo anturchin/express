@@ -1,8 +1,17 @@
 const express = require('express');
 const { engine: expressHandlebars } = require('express-handlebars');
-const { home, about, notFound, serverError } = require('./lib/handlers');
+const bodyParser = require('body-parser');
+const {
+    newsletterSignup,
+    newsletterSignupProcess,
+    newsletterSignupThankYou,
+    home,
+    about,
+    notFound,
+    serverError } = require('./lib/handlers');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.engine('handlebars', expressHandlebars({
     defaultLayout: 'main',
@@ -17,11 +26,17 @@ app.engine('handlebars', expressHandlebars({
 
 app.set('view engine', 'handlebars');
 
-const port = process.env.PORT || 3000;
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', home);
+
+app.get('/newsletter-signup', newsletterSignup);
+app.post('/newsletter-signup/process', newsletterSignupProcess);
+app.get('/newsletter-signup/thank-you', newsletterSignupThankYou);
+
 app.get('/about', about);
 app.use(notFound);
 app.use(serverError);
