@@ -1,6 +1,6 @@
 const express = require('express');
 const { engine: expressHandlebars } = require('express-handlebars');
-const { getFortune } = require('./lib/fortune');
+const { home, about, notFound, serverError } = require('./lib/handlers');
 
 const app = express();
 
@@ -14,20 +14,16 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', (req, res) => res.render('home'));
-app.get('/about', (req, res) => {
-    res.render('about', { fortune:  getFortune()});
-});
+app.get('/', home);
+app.get('/about', about);
+app.use(notFound);
+app.use(serverError);
 
-app.use((req, res) => {
-    res.status(404);
-    res.render('404');
-})
-
-app.use((err, req, res, next) => {
-    console.error(err.message);
-    res.status(500);
-    res.render('500');
-})
-
-app.listen(port, () => console.log(`server express is running on port ${port}...`));
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Express started on http://localhost:${port}` +
+            '; press Ctrl-C to terminate.')
+    })
+} else {
+    module.exports = app
+}
