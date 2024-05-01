@@ -1,8 +1,28 @@
 const express = require('express');
 const { engine: expressHandlebars } = require('express-handlebars');
-const { home, about, notFound, serverError } = require('./lib/handlers');
+const bodyParser = require('body-parser');
+const { Form } = require('multiparty');
+
+const {
+    vacationPhotoContest,
+    vacationPhotoContestAjax,
+    vacationPhotoContestProcessThankYou,
+    apiVacationPhotoContest,
+    apiVacationPhotoContestError,
+    vacationPhotoContestProcess,
+    vacationPhotoContestProcessError,
+    apiNewsletterSignup,
+    newsletter,
+    newsletterSignup,
+    newsletterSignupProcess,
+    newsletterSignupThankYou,
+    home,
+    about,
+    notFound,
+    serverError } = require('./lib/handlers');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.engine('handlebars', expressHandlebars({
     defaultLayout: 'main',
@@ -17,11 +37,42 @@ app.engine('handlebars', expressHandlebars({
 
 app.set('view engine', 'handlebars');
 
-const port = process.env.PORT || 3000;
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', home);
+
+app.get('/newsletter-signup', newsletterSignup);
+app.post('/newsletter-signup/process', newsletterSignupProcess);
+app.get('/newsletter-signup/thank-you', newsletterSignupThankYou);
+
+app.get('/newsletter', newsletter);
+app.post('/api/newsletter-signup', apiNewsletterSignup);
+
+
+app.get('/contest/vacation-photo', vacationPhotoContest);
+app.get('/contest/vacation-photo-ajax', vacationPhotoContestAjax)
+app.post('/contest/vacation-photo/:year/:month', (req, res) => {
+    const form = new Form()
+    form.parse(req, (err, fields, files) => {
+        if (err) return vacationPhotoContestProcessError(req, res, err.message)
+        vacationPhotoContestProcess(req, res, fields, files)
+    })
+});
+
+
+app.get('/contest/vacation-photo-thank-you', vacationPhotoContestProcessThankYou)
+app.post('/api/vacation-photo-contest/:year/:month', (req, res) => {
+    const form = new Form()
+    form.parse(req, (err, fields, files) => {
+        if (err) return apiVacationPhotoContestError(req, res, err.message)
+        apiVacationPhotoContest(req, res, fields, files)
+    })
+})
+
+
 app.get('/about', about);
 app.use(notFound);
 app.use(serverError);
