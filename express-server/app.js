@@ -2,6 +2,8 @@ const express = require('express');
 const { engine: expressHandlebars } = require('express-handlebars');
 const bodyParser = require('body-parser');
 const {
+    apiNewsletterSignup,
+    newsletter,
     newsletterSignup,
     newsletterSignupProcess,
     newsletterSignupThankYou,
@@ -36,6 +38,9 @@ app.get('/', home);
 app.get('/newsletter-signup', newsletterSignup);
 app.post('/newsletter-signup/process', newsletterSignupProcess);
 app.get('/newsletter-signup/thank-you', newsletterSignupThankYou);
+
+app.get('/newsletter', newsletter)
+app.post('/api/newsletter-signup', apiNewsletterSignup)
 
 app.get('/about', about);
 app.use(notFound);

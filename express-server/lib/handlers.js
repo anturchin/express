@@ -14,12 +14,23 @@ const newsletterSignupProcess = (req, res) => {
 
 const newsletterSignupThankYou = (req, res) => res.render('newsletter-signup-thank-you');
 
+const newsletter = (req, res) => res.render('newsletter', { csrf: 'CSRF token goes here' });
+
+const apiNewsletterSignup = (req, res) => {
+    console.log('CSRF token (from hidden form field): ' + req.body._csrf)
+    console.log('Name (from visible form field): ' + req.body.name)
+    console.log('Email (from visible form field): ' + req.body.email)
+    res.send({ result: 'success' })
+}
+
 const home = (req, res) => res.render('home');
 const about = (req, res) => res.render('about', { fortune: getFortune() });
 const notFound = (req, res) => res.render('404');
 const serverError = (err, req, res, next) => res.render('500');
 
 module.exports = {
+    apiNewsletterSignup,
+    newsletter,
     newsletterSignup,
     newsletterSignupProcess,
     newsletterSignupThankYou,
